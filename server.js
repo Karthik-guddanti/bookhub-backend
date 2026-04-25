@@ -13,21 +13,10 @@ dotenv.config();
 
 const app = express();
 
-const allowlist = [
-  'http://localhost:5173',
-  'http://localhost:5174',
-  process.env.CLIENT_URL,
-  ...(process.env.CLIENT_URLS ? process.env.CLIENT_URLS.split(',').map((url) => url.trim()) : []),
-].filter(Boolean);
-
 const corsOptions = {
-  origin(origin, callback) {
-    if (!origin) return callback(null, true);
-
-    const isAllowed = allowlist.includes(origin);
-
-    if (isAllowed) return callback(null, true);
-    return callback(new Error('Not allowed by CORS'));
+  origin: function (origin, callback) {
+    // Allow all origins to prevent Vercel deployment CORS issues
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
