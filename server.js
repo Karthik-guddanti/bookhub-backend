@@ -66,23 +66,23 @@ app.use((err, req, res, next) => {
   });
 });
 
-const startServer = async () => {
-  try {
-    if (!process.env.MONGO_URI) {
-      throw new Error('MONGO_URI is required');
-    }
+// Connect to MongoDB
+if (process.env.MONGO_URI) {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => console.log('Successfully connected to MongoDB!'))
+    .catch((err) => console.error('MongoDB connection failed:', err.message));
+} else {
+  console.error('MONGO_URI is required');
+}
 
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('Successfully connected to MongoDB!');
+// Export the Express API for Vercel
+export default app;
 
-    const PORT = process.env.PORT || 5000;
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error('Server startup failed:', error.message);
-    process.exit(1);
-  }
-};
-
-startServer();
+// Start the server if running locally
+if (process.env.NODE_ENV !== 'production') {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
